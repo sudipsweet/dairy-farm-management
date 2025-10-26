@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dairy.farm.user.dto.UserDto;
 import com.dairy.farm.user.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -25,13 +27,13 @@ public class UserController {
 	
 	//Create User API
 	@PostMapping("/")
-	public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+	public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto){
 		UserDto createUser = userService.createUser(userDto);
 		return new ResponseEntity<UserDto>(createUser, HttpStatus.CREATED);
 	}
 	// Update User API
 	@PostMapping("/{id}")
-	public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable("id") long id){
+	public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto, @PathVariable("id") long id){
 		UserDto updateUser = userService.updateUser(userDto, id);
 		return new ResponseEntity<UserDto>(updateUser, HttpStatus.OK);
 	}

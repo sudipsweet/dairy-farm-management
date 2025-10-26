@@ -1,13 +1,18 @@
 package com.dairy.farm.user.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class UserDto {
 	
 	private long userId;
 	
+	@NotBlank(message = "UserName should not blank")
 	private String userName;
 	
 	private String password;
-	
+	@Email(message = "Invalid email format")
+	@NotBlank(message = "Email address should not blank")
 	private String emailAddress;
 	
 	private String role; // ADMIN, STAFF, VET 

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.dairy.farm.user.dto.UserDto;
 import com.dairy.farm.user.entites.User;
+import com.dairy.farm.user.exception.DuplicateUserException;
+import com.dairy.farm.user.exception.ResourceNotFoundException;
 import com.dairy.farm.user.mapper.UserMapper;
 import com.dairy.farm.user.repository.UserRepository;
 import com.dairy.farm.user.service.UserService;
@@ -20,13 +22,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto createUser(UserDto userDto) {
+		
+		if(userRepository.existsByUserName(userDto.getUserName())) {
+			throw new DuplicateUserException("UserName : ", userDto.getUserName());
+		}
+		
+		if(userRepository.existsByEmailAddress(userDto.getEmailAddress())) {
+			throw new DuplicateUserException("EmailAddress : ", userDto.getEmailAddress());
+		}
+		
 		User user = userRepository.save(UserMapper.toUser(userDto));
 		return UserMapper.toUserDto(user);
 	}
 
 	@Override
 	public UserDto updateUser(UserDto userDto, Long id) {
-		User user = userRepository.findById(id).get();
+		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "User Id", id));
 		user.setUserName(userDto.getUserName());
 		user.setPassword(userDto.getPassword());
 		user.setEmailAddress(userDto.getEmailAddress());
@@ -36,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUserById(Long id) {
-		User user = userRepository.findById(id).get();
+		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "User Id", id));
 		return UserMapper.toUserDto(user);
 	}
 
@@ -48,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(Long id) {
+		userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "User Id", id));
 		userRepository.deleteById(id);
 	}
 
